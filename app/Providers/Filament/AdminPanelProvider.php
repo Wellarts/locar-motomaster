@@ -80,6 +80,7 @@ class AdminPanelProvider extends PanelProvider
                       return Blade::render('@laravelPWA');
                    }
               )
+              
             ->navigationItems([
                 NavigationItem::make('Manuais')
                     ->url('https://drive.google.com/drive/folders/1Pt9pkPfRKporD7Q3oLafggKGpHu4Xw46?usp=sharing', shouldOpenInNewTab: true)
