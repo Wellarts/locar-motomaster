@@ -74,13 +74,14 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            # TESTE
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                    function (): string {
                       return Blade::render('@laravelPWA');
                    }
               )
-              
+
             ->navigationItems([
                 NavigationItem::make('Manuais')
                     ->url('https://drive.google.com/drive/folders/1Pt9pkPfRKporD7Q3oLafggKGpHu4Xw46?usp=sharing', shouldOpenInNewTab: true)
