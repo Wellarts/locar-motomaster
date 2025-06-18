@@ -161,11 +161,20 @@
         <b class="tx">Km de Saída:</b>  {{$locacao->km_saida}}
     </td>
     <td>
-        <b class="tx">Qtd de Diárias:</b> {{$locacao->qtd_diarias}}
+        @if($locacao->forma_locacao == 1)
+            <b class="tx">Qtd de Diárias:</b> {{$locacao->qtd_diarias}}
+        @elseif($locacao->forma_locacao == 2)
+            <b class="tx">Qtd de Semanas:</b> {{$locacao->qtd_semanas}}
+        @endif
     </td>
     <td colspan="2">
-        <b class="tx">Valor da Diária R$:</b> {{$locacao->Veiculo->valor_diaria}}
+        @if($locacao->forma_locacao == 1)
+            <b class="tx">Valor da Diária R$:</b> {{$locacao->Veiculo->valor_diaria}}
+        @elseif($locacao->forma_locacao == 2)
+            <b class="tx">Valor da Semana R$:</b> {{$locacao->Veiculo->valor_semana}}
+        @endif
     </td>
+
 
 </tr>
 <tr>
@@ -398,7 +407,19 @@
             LOCATÁRIO: {{$locacao->Cliente->nome}}<br><Br><br><br>
 
             ___________________________________________________________<br>
-            LOCADOR: MOTOMASTER CAMPO GRANDE LTDA.
+            LOCADOR: MOTOMASTER CAMPO GRANDE LTDA.<br><Br><br><br>
+
+             @if(!empty($locacao->testemunha_1))
+                        ___________________________________________________________<br>            
+                        TESTEMUNHA: {{$locacao->testemunha_1}} <br>
+                        <b>RG: {{$locacao->testemunha_1_rg}}</b> <Br><br><br>
+            @endif
+
+            @if(!empty($locacao->testemunha_2))
+                    __________________________________________________________<br>            
+                    TESTEMUNHA: {{$locacao->testemunha_2}} <br>
+                    <b>RG: {{$locacao->testemunha_2_rg}}</b> <br><br><br>
+            @endif    
 
 
 
