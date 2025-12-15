@@ -24,6 +24,7 @@ class LucroVeiculo extends Page implements HasForms
     protected static string $view = 'filament.pages.lucro-veiculo';
     protected static ?string $title = 'Lucratividade por Veículo';
     protected static ?string $navigationGroup = 'Consultas';
+    protected static bool $shouldRegisterNavigation = false;
     
     public array $data = [];
     private $cacheKey = 'veiculos_placa_id';
