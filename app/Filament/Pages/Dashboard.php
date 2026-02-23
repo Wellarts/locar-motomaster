@@ -101,202 +101,202 @@ class Dashboard extends \Filament\Pages\Dashboard
         return static::$title ?? __('filament-panels::pages/dashboard.title');
     }
 
-    public function mount(): void
-    {
-        // -------------------------
-        // ALERTAS DE VEÍCULOS
-        // -------------------------
-        // Buscar apenas veículos que estão com alertas ativos e que
-        // atendem pelo menos uma condição de aviso (óleo, filtro, correia, pastilha)
-        $veiculos = Veiculo::select([
-                'id',
-                'modelo',
-                'placa',
-                'prox_troca_oleo',
-                'prox_troca_filtro',
-                'prox_troca_correia',
-                'prox_troca_pastilha',
-                'km_atual',
-                'aviso_troca_oleo',
-                'aviso_troca_filtro',
-                'aviso_troca_correia',
-                'aviso_troca_pastilha',
-            ])
-            ->where('status_alerta', 1)
-            ->where('status', 1)
-            ->where(function ($q) {
-                $q->whereRaw('prox_troca_oleo - km_atual <= aviso_troca_oleo')
-                  ->orWhereRaw('prox_troca_filtro - km_atual <= aviso_troca_filtro')
-                  ->orWhereRaw('prox_troca_correia - km_atual <= aviso_troca_correia')
-                  ->orWhereRaw('prox_troca_pastilha - km_atual <= aviso_troca_pastilha');
-            })
-            ->get();
+    // public function mount(): void
+    // {
+    //     // -------------------------
+    //     // ALERTAS DE VEÍCULOS
+    //     // -------------------------
+    //     // Buscar apenas veículos que estão com alertas ativos e que
+    //     // atendem pelo menos uma condição de aviso (óleo, filtro, correia, pastilha)
+    //     $veiculos = Veiculo::select([
+    //             'id',
+    //             'modelo',
+    //             'placa',
+    //             'prox_troca_oleo',
+    //             'prox_troca_filtro',
+    //             'prox_troca_correia',
+    //             'prox_troca_pastilha',
+    //             'km_atual',
+    //             'aviso_troca_oleo',
+    //             'aviso_troca_filtro',
+    //             'aviso_troca_correia',
+    //             'aviso_troca_pastilha',
+    //         ])
+    //         ->where('status_alerta', 1)
+    //         ->where('status', 1)
+    //         ->where(function ($q) {
+    //             $q->whereRaw('prox_troca_oleo - km_atual <= aviso_troca_oleo')
+    //               ->orWhereRaw('prox_troca_filtro - km_atual <= aviso_troca_filtro')
+    //               ->orWhereRaw('prox_troca_correia - km_atual <= aviso_troca_correia')
+    //               ->orWhereRaw('prox_troca_pastilha - km_atual <= aviso_troca_pastilha');
+    //         })
+    //         ->get();
 
-        // Agrupar por tipo de alerta e montar mensagens compactas (uma notificação por tipo)
-        $alerts = [
-            'oleo' => [],
-            'filtro' => [],
-            'correia' => [],
-            'pastilha' => [],
-        ];
+    //     // Agrupar por tipo de alerta e montar mensagens compactas (uma notificação por tipo)
+    //     $alerts = [
+    //         'oleo' => [],
+    //         'filtro' => [],
+    //         'correia' => [],
+    //         'pastilha' => [],
+    //     ];
 
-        foreach ($veiculos as $v) {
-            $diffOleo = $v->prox_troca_oleo - $v->km_atual;
-            if ($diffOleo <= $v->aviso_troca_oleo) {
-                $alerts['oleo'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffOleo} Km";
-            }
+    //     foreach ($veiculos as $v) {
+    //         $diffOleo = $v->prox_troca_oleo - $v->km_atual;
+    //         if ($diffOleo <= $v->aviso_troca_oleo) {
+    //             $alerts['oleo'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffOleo} Km";
+    //         }
 
-            $diffFiltro = $v->prox_troca_filtro - $v->km_atual;
-            if ($diffFiltro <= $v->aviso_troca_filtro) {
-                $alerts['filtro'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffFiltro} Km";
-            }
+    //         $diffFiltro = $v->prox_troca_filtro - $v->km_atual;
+    //         if ($diffFiltro <= $v->aviso_troca_filtro) {
+    //             $alerts['filtro'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffFiltro} Km";
+    //         }
 
-            $diffCorreia = $v->prox_troca_correia - $v->km_atual;
-            if ($diffCorreia <= $v->aviso_troca_correia) {
-                $alerts['correia'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffCorreia} Km";
-            }
+    //         $diffCorreia = $v->prox_troca_correia - $v->km_atual;
+    //         if ($diffCorreia <= $v->aviso_troca_correia) {
+    //             $alerts['correia'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffCorreia} Km";
+    //         }
 
-            $diffPastilha = $v->prox_troca_pastilha - $v->km_atual;
-            if ($diffPastilha <= $v->aviso_troca_pastilha) {
-                $alerts['pastilha'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffPastilha} Km";
-            }
-        }
+    //         $diffPastilha = $v->prox_troca_pastilha - $v->km_atual;
+    //         if ($diffPastilha <= $v->aviso_troca_pastilha) {
+    //             $alerts['pastilha'][] = "{$v->modelo} ({$v->placa}) - Faltam {$diffPastilha} Km";
+    //         }
+    //     }
 
-        // Envia uma notificação por tipo (se houver)
-        if (!empty($alerts['oleo'])) {
-            Notification::make()
-                ->title('ATENÇÃO: Troca de óleo próxima')
-                ->body(implode("\n", array_slice($alerts['oleo'], 0, 10)))
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
+    //     // Envia uma notificação por tipo (se houver)
+    //     if (!empty($alerts['oleo'])) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Troca de óleo próxima')
+    //             ->body(implode("\n", array_slice($alerts['oleo'], 0, 10)))
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        if (!empty($alerts['filtro'])) {
-            Notification::make()
-                ->title('ATENÇÃO: Troca de filtro próxima')
-                ->body(implode("\n", array_slice($alerts['filtro'], 0, 10)))
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
+    //     if (!empty($alerts['filtro'])) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Troca de filtro próxima')
+    //             ->body(implode("\n", array_slice($alerts['filtro'], 0, 10)))
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        if (!empty($alerts['correia'])) {
-            Notification::make()
-                ->title('ATENÇÃO: Troca da correia próxima')
-                ->body(implode("\n", array_slice($alerts['correia'], 0, 10)))
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
+    //     if (!empty($alerts['correia'])) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Troca da correia próxima')
+    //             ->body(implode("\n", array_slice($alerts['correia'], 0, 10)))
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        if (!empty($alerts['pastilha'])) {
-            Notification::make()
-                ->title('ATENÇÃO: Troca da pastilha próxima')
-                ->body(implode("\n", array_slice($alerts['pastilha'], 0, 10)))
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
+    //     if (!empty($alerts['pastilha'])) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Troca da pastilha próxima')
+    //             ->body(implode("\n", array_slice($alerts['pastilha'], 0, 10)))
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        // -------------------------
-        // CONTAS A RECEBER
-        // -------------------------
-        $hoje = Carbon::today();
-        $ate3dias = (clone $hoje)->addDays(3);
+    //     // -------------------------
+    //     // CONTAS A RECEBER
+    //     // -------------------------
+    //     $hoje = Carbon::today();
+    //     $ate3dias = (clone $hoje)->addDays(3);
 
-        // Buscar apenas os registros relevantes e já com relação carregada
-        $contasReceberProximas = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereBetween('data_vencimento', [$hoje->toDateString(), $ate3dias->toDateString()])
-            ->with('cliente:id,nome')
-            ->get();
+    //     // Buscar apenas os registros relevantes e já com relação carregada
+    //     $contasReceberProximas = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereBetween('data_vencimento', [$hoje->toDateString(), $ate3dias->toDateString()])
+    //         ->with('cliente:id,nome')
+    //         ->get();
 
-        $contasReceberHoje = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereDate('data_vencimento', $hoje->toDateString())
-            ->with('cliente:id,nome')
-            ->get();
+    //     $contasReceberHoje = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereDate('data_vencimento', $hoje->toDateString())
+    //         ->with('cliente:id,nome')
+    //         ->get();
 
-        $contasReceberVencidas = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereDate('data_vencimento', '<', $hoje->toDateString())
-            ->with('cliente:id,nome')
-            ->get();
+    //     $contasReceberVencidas = ContasReceber::select(['id', 'cliente_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereDate('data_vencimento', '<', $hoje->toDateString())
+    //         ->with('cliente:id,nome')
+    //         ->get();
 
-        foreach ($contasReceberProximas as $cr) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a receber com vencimento próximo.')
-                ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->success()
-                //->persistent(false)
-                ->send();
-        }
+    //     foreach ($contasReceberProximas as $cr) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a receber com vencimento próximo.')
+    //             ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->success()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        foreach ($contasReceberHoje as $cr) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a receber com vencimento para hoje.')
-                ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->warning()
-                //->persistent(false)
-                ->send();
-        }
+    //     foreach ($contasReceberHoje as $cr) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a receber com vencimento para hoje.')
+    //             ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->warning()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        foreach ($contasReceberVencidas as $cr) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a receber vencida.')
-                ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
+    //     foreach ($contasReceberVencidas as $cr) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a receber vencida.')
+    //             ->body('Do cliente <b>' . $cr->cliente->nome . '</b> no valor de R$ <b>' . $cr->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cr->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        // -------------------------
-        // CONTAS A PAGAR
-        // -------------------------
-        $contasPagarProximas = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereBetween('data_vencimento', [$hoje->toDateString(), $ate3dias->toDateString()])
-            ->with('fornecedor:id,nome')
-            ->get();
+    //     // -------------------------
+    //     // CONTAS A PAGAR
+    //     // -------------------------
+    //     $contasPagarProximas = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereBetween('data_vencimento', [$hoje->toDateString(), $ate3dias->toDateString()])
+    //         ->with('fornecedor:id,nome')
+    //         ->get();
 
-        $contasPagarHoje = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereDate('data_vencimento', $hoje->toDateString())
-            ->with('fornecedor:id,nome')
-            ->get();
+    //     $contasPagarHoje = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereDate('data_vencimento', $hoje->toDateString())
+    //         ->with('fornecedor:id,nome')
+    //         ->get();
 
-        $contasPagarVencidas = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
-            ->where('status', '=', '0')
-            ->whereDate('data_vencimento', '<', $hoje->toDateString())
-            ->with('fornecedor:id,nome')
-            ->get();
+    //     $contasPagarVencidas = ContasPagar::select(['id', 'fornecedor_id', 'valor_parcela', 'data_vencimento'])
+    //         ->where('status', '=', '0')
+    //         ->whereDate('data_vencimento', '<', $hoje->toDateString())
+    //         ->with('fornecedor:id,nome')
+    //         ->get();
 
-        foreach ($contasPagarProximas as $cp) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a pagar com vencimento próximo.')
-                ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->success()
-                //->persistent(false)
-                ->send();
-        }
+    //     foreach ($contasPagarProximas as $cp) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a pagar com vencimento próximo.')
+    //             ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->success()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        foreach ($contasPagarHoje as $cp) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a pagar com vencimento para hoje.')
-                ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->warning()
-                //->persistent(false)
-                ->send();
-        }
+    //     foreach ($contasPagarHoje as $cp) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a pagar com vencimento para hoje.')
+    //             ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->warning()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
 
-        foreach ($contasPagarVencidas as $cp) {
-            Notification::make()
-                ->title('ATENÇÃO: Conta a pagar vencida.')
-                ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
-                ->danger()
-                //->persistent(false)
-                ->send();
-        }
-    }
+    //     foreach ($contasPagarVencidas as $cp) {
+    //         Notification::make()
+    //             ->title('ATENÇÃO: Conta a pagar vencida.')
+    //             ->body('Do fornecedor <b>' . $cp->fornecedor->nome . '</b> no valor de R$ <b>' . $cp->valor_parcela . '</b> com vencimento em <b>' . Carbon::parse($cp->data_vencimento)->format('d/m/Y') . '</b>.')
+    //             ->danger()
+    //             //->persistent(false)
+    //             ->send();
+    //     }
+    // }
 }
