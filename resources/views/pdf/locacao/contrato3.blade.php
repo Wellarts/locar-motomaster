@@ -173,7 +173,7 @@
         </tr>
         <tr>
             <td>
-                <b class="tx">Dia do Vencimento (1ª parcela):</b> {{\Carbon\Carbon::parse($locacao->data_vencimento_financeiro)->format('d/m/Y')}}
+                <b class="tx">Dia do Vencimento (1ª parcela):</b>
             </td>
             <td>
                 <b class="tx">Valor Total Financiado R$:</b> R$ {{$locacao->valor_total_desconto}}
