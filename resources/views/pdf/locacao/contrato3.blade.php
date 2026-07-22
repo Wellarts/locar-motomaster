@@ -173,7 +173,7 @@
         </tr>
         <tr>
             <td>
-                <b class="tx">Dia do Vencimento (1ª parcela):</b>
+                <b class="tx">Dia do Vencimento (1ª parcela):</b> {{ \Carbon\Carbon::parse($locacao->data_vencimento_financeiro)->format('d/m/Y') }}
             </td>
             <td>
                 <b class="tx">Valor Total Financiado R$:</b> R$ {{$locacao->valor_total_desconto}}
@@ -190,30 +190,16 @@
         </tr>
     </table>
     <div class="retangulo">
-        <span class="texto">SERVIÇOS CONTRATADOS</span>
+        <span class="texto">OBSERVAÇÕES</span>
     </div>
     <table class="tabelas" id='ficha'>
         <tr>
             <td>
-                ( ) Proteção MotoMaster &nbsp;&nbsp; ( ) MotoMaster Care+ &nbsp;&nbsp; ( ) Moto Reserva
+                {{ $locacao->obs}}
             </td>
         </tr>
     </table>
-    <div class="retangulo">
-        <span class="texto">ITENS ENTREGUES</span>
-    </div>
-    <table class="tabelas" id='ficha'>
-        <tr>
-            <td>
-                ( ) Chave Principal &nbsp;&nbsp; ( ) Chave Reserva &nbsp;&nbsp; ( ) Carregador Original &nbsp;&nbsp; ( ) Cabo de Carregamento
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b class="tx">Outros:</b>
-            </td>
-        </tr>
-    </table>
+   
 
     <!-- PÁGINA 2 -->
 
