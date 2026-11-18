@@ -453,7 +453,9 @@
             f) inadimplência, conforme previsto neste contrato;<br>
             g) recusa injustificada em apresentar a motocicleta para vistoria.<br>
             19.3. Rescindido o contrato, o LOCATÁRIO deverá devolver imediatamente a motocicleta no local indicado pela LOCADORA.<br>
-            19.4. A devolução da motocicleta não extingue eventual obrigação de pagamento de valores pendentes.
+            19.4. A devolução da motocicleta não extingue eventual obrigação de pagamento de valores pendentes.<br>
+            19.5 À cláusula de rescisão do contrato da MotoMaster. A multa se aplica à devolução voluntária antes de completar 3 meses da entrega da moto.
+                Usei uma mensalidade como valor-base, com cobrança proporcional aos dias restantes, conforme o art. 571 do Código Civil.
         </p>
 
         <p class="parag">
