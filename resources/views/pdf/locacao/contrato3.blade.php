@@ -439,8 +439,7 @@
             g) recusa injustificada em apresentar a motocicleta para vistoria.<br>
             19.3. Rescindido o contrato, o LOCATÁRIO deverá devolver imediatamente a motocicleta no local indicado pela LOCADORA.<br>
             19.4. A devolução da motocicleta não extingue eventual obrigação de pagamento de valores pendentes.<br>
-            19.5 À cláusula de rescisão do contrato da MotoMaster. A multa se aplica à devolução voluntária antes de completar 3 meses da entrega da moto.
-                Usei uma mensalidade como valor-base, com cobrança proporcional aos dias restantes, conforme o art. 571 do Código Civil.
+            19.5. Se o LOCATÁRIO devolver a motocicleta por conveniência própria para encerrar a locação antes do término do prazo contratado e antes de completar 3 (três) meses contados da entrega do veículo, pagará multa compensatória com valor-base de 1 (uma) mensalidade da locação indicada no Quadro Resumo da Operação. Para calcular a multa, considera-se o menor prazo entre os 3 (três) meses e o prazo contratado. Multiplica-se a mensalidade pelos dias corridos que faltarem para cumprir esse prazo e divide-se o resultado pelo total de dias corridos do mesmo prazo.
         </p>
 
         <p class="parag">
