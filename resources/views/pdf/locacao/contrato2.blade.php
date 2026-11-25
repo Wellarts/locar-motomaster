@@ -192,7 +192,7 @@
                 <b class="tx">Valor do Desconto R$:</b> {{$locacao->valor_desconto}}
             </td>
             <td colspan="2">
-                <b class="tx">Valor Total R$:</b> {{$locacao->valor_total_desconto}}
+                <b class="tx">Valor Total - Contrato R$:</b> {{$locacao->valor_total_desconto}}
             </td>
 
         </tr>
